@@ -48,4 +48,20 @@ app.get('/statement/', VerifyCustomersExistance, (request, response) => {
   return response.json(customer.statements);
 })
 
+app.post('/deposit', VerifyCustomersExistance, (request, response) => {
+  const { customer } = request;
+  const { description, amount } = request.body;
+
+  const statementOperation = {
+    description,
+    amount,
+    createdAt: new Date(),
+    type: 'credit'
+  };
+
+  customer.statements.push(statementOperation);
+
+  return response.status(201).send();
+})
+
 app.listen(3333);
