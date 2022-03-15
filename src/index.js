@@ -22,6 +22,17 @@ function VerifyCustomersExistance(request, response, next) {
   return next();
 }
 
+function GetBalance(statement){
+  const balance = statement.reduce((acc, operation) => {
+    if (operation.type === 'credit')
+      return acc + operation.amount;
+    else
+      return acc - operation.amount;
+  }, 0);
+
+  return balance;
+}
+
 app.post('/account', (request, response) => {
   const { cpf, name } = request.body;
 
@@ -57,6 +68,29 @@ app.post('/deposit', VerifyCustomersExistance, (request, response) => {
     amount,
     createdAt: new Date(),
     type: 'credit'
+  };
+
+  customer.statements.push(statementOperation);
+
+  return response.status(201).send();
+})
+
+app.post('/withdraw', VerifyCustomersExistance, (request, response) => {
+  const { amount } = request.body;
+  const { customer } = request;
+
+  if (customer.statements.length === 0)
+    return response.status(400).json({error: "Insufficient funds.1"});
+
+  const balance = GetBalance(customer.statements);
+  if (balance < amount)
+    return response.status(400).json({error: "Insufficient funds.2"});
+
+  const statementOperation = {
+    description: 'Withdraw',
+    amount,
+    createdAt: new Date(),
+    type: 'debit'
   };
 
   customer.statements.push(statementOperation);
