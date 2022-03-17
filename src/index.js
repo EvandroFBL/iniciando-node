@@ -120,10 +120,25 @@ app.put('/account', VerifyCustomersExistance, (request, response) => {
   return response.status(200).send()
 })
 
-app.get("/account", VerifyCustomersExistance, (request, response) => {
+app.get('/account', VerifyCustomersExistance, (request, response) => {
   const { customer } = request;
 
   return response.json(customer);
 })
 
+app.delete('/account', VerifyCustomersExistance, (request, response) => {
+  const { customer } = request;
+
+  customers.splice(customer, 1);
+
+  return response.json(customers);
+})
+
+app.get('/balance', VerifyCustomersExistance, (request, response) => {
+  const { customer } = request;
+
+  const balance = GetBalance(customer.statements);
+
+  return response.json(balance);
+})
 app.listen(3333);
