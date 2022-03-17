@@ -111,4 +111,19 @@ app.get('/statement/date', VerifyCustomersExistance, (request, response) => {
   return response.json(filteredStatements);
 })
 
+app.put('/account', VerifyCustomersExistance, (request, response) => {
+  const { customer } = request;
+  const { name } = request.body;
+
+  customer.name = name;
+
+  return response.status(200).send()
+})
+
+app.get("/account", VerifyCustomersExistance, (request, response) => {
+  const { customer } = request;
+
+  return response.json(customer);
+})
+
 app.listen(3333);
