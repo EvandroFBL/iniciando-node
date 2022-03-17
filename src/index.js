@@ -98,4 +98,17 @@ app.post('/withdraw', VerifyCustomersExistance, (request, response) => {
   return response.status(201).send();
 })
 
+app.get('/statement/date', VerifyCustomersExistance, (request, response) => {
+  const { customer } = request;
+  const { date } = request.query;
+
+  const dateFormated = new Date(date);
+
+  const filteredStatements = customer.statements.filter((statement) => {
+    return statement.createdAt.toDateString() === dateFormated.toDateString();
+  });
+
+  return response.json(filteredStatements);
+})
+
 app.listen(3333);
